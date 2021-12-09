@@ -45,7 +45,7 @@ function App() {
         <table className="table table-hover">
           {tableHead}
           <tbody>
-            {sessions.map(x => <tr>
+            {sessions.map((x, i) => <tr key={i}>
               <td>{x.name}</td>
               <td>{moment(x.input).format('lll')}</td>
               <td>{moment(x.output).format('lll')}</td>
@@ -64,7 +64,6 @@ const readFile = (e, setHours, setSessions) => {
     return;
   }
   const file = e.target.files[0]
-  console.log(file)
   const fileReader = new FileReader();
   fileReader.onload = (event) => {
     const csv = fileReader.result
@@ -77,12 +76,10 @@ const readFile = (e, setHours, setSessions) => {
         index: index,
         name: `${item.FirstName} ${item.LastName}`,
         move: item.Move,
-        date: moment(item.Date).format(),
+        date: new Date(item.Date).toLocaleDateString("tr-tr"),
       }
     })
-
     const sessions = calculateSessions(result)
-    console.log(sessions)
     setHours(sessions.totalHours)
     setSessions(sessions.sessions)
   }
