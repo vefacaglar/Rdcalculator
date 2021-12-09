@@ -9,36 +9,60 @@ function App() {
 
   let tableHead;
   if (sessions.length) {
-    tableHead = <tr>
+    tableHead = <thead><tr>
       <th>Name</th>
       <th>Input</th>
       <th>Output</th>
-      <th>Spent Minutes</th>
-    </tr>
+      <th>Minutes</th>
+      <th>Hours</th>
+    </tr></thead>
+  }
+
+  let spentHourClass = ""
+  if(hours >= 64){
+    spentHourClass = "text-success"
+  }else if(hours > 0 && hours < 64){
+    spentHourClass = "text-danger"
   }
 
   return (
     <div className="App">
-      <div>
-        <input type="file" onChange={(e) => readFile(e, setHours, setSessions)} />
+      <div className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container">
+          <label className="navbar-brand">Research&Development Input Output Calculator</label>
+        </div>
       </div>
-      <div>
-        <label>Spent hours: {hours}</label>
+      <div className="container">
+        <div>
+          <input className="form-control" type="file" onChange={(e) => readFile(e, setHours, setSessions)} />
+        </div>
+        <div>
+          <label style={{
+            fontSize: '25px',
+            fontWeight: '700'
+          }} className={spentHourClass} >Spent hours: {hours}</label>
+        </div>
+        <table className="table table-hover">
+          {tableHead}
+          <tbody>
+            {sessions.map(x => <tr>
+              <td>{x.name}</td>
+              <td>{moment(x.input).format('lll')}</td>
+              <td>{moment(x.output).format('lll')}</td>
+              <td>{x.spentMinutes}</td>
+              <td>{(x.spentMinutes / 60).toFixed(2)}</td>
+            </tr>)}
+          </tbody>
+        </table>
       </div>
-      <table>
-        {tableHead}
-        {sessions.map(x => <tr>
-          <td>{x.name}</td>
-          <td>{x.input}</td>
-          <td>{x.output}</td>
-          <td>{x.spentMinutes}</td>
-        </tr>)}
-      </table>
     </div>
   );
 }
 
 const readFile = (e, setHours, setSessions) => {
+  if(e.target.files.length <= 0){
+    return;
+  }
   const file = e.target.files[0]
   console.log(file)
   const fileReader = new FileReader();
