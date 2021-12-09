@@ -76,7 +76,7 @@ const readFile = (e, setHours, setSessions) => {
         index: index,
         name: `${item.FirstName} ${item.LastName}`,
         move: item.Move,
-        date: new Date(item.Date).toLocaleDateString("tr-tr"),
+        date: new Date(item.Date).toLocaleString("tr-tr"),
       }
     })
     const sessions = calculateSessions(result)
