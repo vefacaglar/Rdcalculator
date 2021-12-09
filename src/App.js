@@ -19,9 +19,9 @@ function App() {
   }
 
   let spentHourClass = ""
-  if(hours >= 64){
+  if (hours >= 64) {
     spentHourClass = "text-success"
-  }else if(hours > 0 && hours < 64){
+  } else if (hours > 0 && hours < 64) {
     spentHourClass = "text-danger"
   }
 
@@ -60,7 +60,7 @@ function App() {
 }
 
 const readFile = (e, setHours, setSessions) => {
-  if(e.target.files.length <= 0){
+  if (e.target.files.length <= 0) {
     return;
   }
   const file = e.target.files[0]
@@ -82,6 +82,10 @@ const readFile = (e, setHours, setSessions) => {
     const sessions = calculateSessions(result)
     setHours(sessions.totalHours)
     setSessions(sessions.sessions)
+
+    console.log(sessions.sessions)
+    const sessionsByDay = sessionsToDayByDay(sessions.sessions)
+    console.log(sessionsByDay)
   }
   fileReader.readAsText(file)
 }
@@ -128,6 +132,29 @@ const calculateSessions = (dates) => {
     sessions,
     totalHours: ((_.sum(sessions.map(t => t.spentMinutes))) / 60).toFixed(2)
   };
+}
+
+const sessionsToDayByDay = (sessions) => {
+  let response = [];
+  sessions.forEach(session => {
+    const currentDate = new Date(session.input).toLocaleDateString();
+    const currentData = response.filter(t => t.date === currentDate)[0]
+    if (currentData != undefined) {
+      currentData.times = [...currentData.times, {
+        input: session.input,
+        output: session.output
+      }]
+    } else {
+      response = [...response,{
+        date: new Date(session.input).toLocaleDateString(),
+        times: [{
+          input: session.input,
+          output: session.output
+        }]
+      }]
+    }
+  })
+  return response
 }
 
 export default App;
