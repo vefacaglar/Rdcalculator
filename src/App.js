@@ -1,15 +1,44 @@
 import './App.css';
 import moment from 'moment';
+import _ from 'lodash';
+import React, { useState } from 'react';
 
 function App() {
+  const [hours, setHours] = useState(0);
+  const [sessions, setSessions] = useState([]);
+
+  let tableHead;
+  if (sessions.length) {
+    tableHead = <tr>
+      <th>Name</th>
+      <th>Input</th>
+      <th>Output</th>
+      <th>Spent Minutes</th>
+    </tr>
+  }
+
   return (
     <div className="App">
-      <input type="file" onChange={readFile} />
+      <div>
+        <input type="file" onChange={(e) => readFile(e, setHours, setSessions)} />
+      </div>
+      <div>
+        <label>Spent hours: {hours}</label>
+      </div>
+      <table>
+        {tableHead}
+        {sessions.map(x => <tr>
+          <td>{x.name}</td>
+          <td>{x.input}</td>
+          <td>{x.output}</td>
+          <td>{x.spentMinutes}</td>
+        </tr>)}
+      </table>
     </div>
   );
 }
 
-const readFile = (e) => {
+const readFile = (e, setHours, setSessions) => {
   const file = e.target.files[0]
   console.log(file)
   const fileReader = new FileReader();
@@ -30,6 +59,8 @@ const readFile = (e) => {
 
     const sessions = calculateSessions(result)
     console.log(sessions)
+    setHours(sessions.totalHours)
+    setSessions(sessions.sessions)
   }
   fileReader.readAsText(file)
 }
@@ -73,7 +104,8 @@ const calculateSessions = (dates) => {
   })
 
   return {
-    sessions
+    sessions,
+    totalHours: ((_.sum(sessions.map(t => t.spentMinutes))) / 60).toFixed(2)
   };
 }
 
